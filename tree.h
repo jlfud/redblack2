@@ -22,7 +22,10 @@ class tree{
   void leftrotate(node*);
   void rightrotate(node*);
   void build(node*);
-  node* getRoot();
+  node* remove(node* &, int);
+  void fixRemove(node*);
+
+  node*& getRoot();
 private:
   node* root = NULL;
 };
