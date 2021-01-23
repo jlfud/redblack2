@@ -21,10 +21,10 @@ class tree{
   void display(node*); 
   void leftrotate(node*);
   void rightrotate(node*);
-  void build(node*);
-  node* remove(node* &, int);
-  void fixRemove(node*);
-
+  void build(node*); //fix insert
+  node* stdremove(node* &, int);
+  void remove(node* &, int);
+  bool search(node*, int);
   node*& getRoot();
 private:
   node* root = NULL;

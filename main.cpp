@@ -41,7 +41,17 @@ int main(){
     else if(strcmp(in, "delete")==0){
       cout << "value to delete: " << endl;
       cin >> intin;
-      t->fixTree(t->remove(t->getRoot(), intin));
+      t->remove(t->getRoot(), intin);
+    }
+    else if(strcmp(in, "search")==0){
+      cout << "number to search: " << endl;
+      cin >> intin;
+      if(t->search(t->getRoot(), intin)){
+	cout << intin << " is in the tree" << endl; 
+      }
+      else{
+	cout << intin << " is not in the tree" << endl; 
+      }
     }
     else if(strcmp(in, "quit")==0){
       return 0;

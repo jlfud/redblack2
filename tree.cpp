@@ -192,72 +192,111 @@ void tree::build(node* n){
     g->isred = true;
   }
 }
-node* tree::remove(node* &current, int n){
-  if(root==NULL){ //nothing in tree
-    cout << "no data in tree yet" << endl;
-    return NULL;
+node* tree::stdremove(node* &current, int n){
+  //standard bst removal
+  if(current == NULL){
+    return current;
   }
-  //traverse through tree until the correct node is found
-  if(n < current->data){
-    current->left = remove(current->left, n);
+  else if(n < current->data){
+    current->left = this->stdremove(current->left, n); 
   }
   else if(n > current->data){
-    root->right = remove(current->right, n);
+    current->right = this->stdremove(current->right, n);
   }
   else{
-    //node has no children
-    if(current->right == NULL && current->left == NULL){
-      delete current; //just delete the node
-      current = NULL;
+    if(current->left == NULL && current->right == NULL){
+      delete current;
+      current = NULL; 
     }
     else if(current->left == NULL){
-      //node has a right child
-      node* no = current;
+      node* temp = current;
       current = current->right;
-      delete no;
+      delete temp; 
     }
     else if(current->right == NULL){
-      //node has a left child
-      node* no = current;
+      node* temp = current;
       current = current->left;
-      delete no;
+      delete temp; 
     }
     else{
-      //hibbard's algorithm to delete a node with left and right child
-      //node has two children//node has a right child
-      node* no = current; //node to delete
-      node* min = current->right; //leftmost element in right subtree
-      //preparing to replace node to delete with min
-      node* parent = current;  //parent of min
-      if(min->left == NULL){
-	//if the node is already at the bottom
-	//replace parent (unchanged so node to delete) with min
-	parent->data = min->data;
-	parent->right = min->right;
+      node* temp = current;
+      while(temp->left != NULL){
+	temp = temp->left; 
       }
-      else if(parent->right->left == NULL){
-	//if the right node of the parent is the bottom node
-	parent->data = parent->right->data;
-	parent->right = parent->right->right;
-	//parent is now parent's right now
+      current->data = temp->data;
+      current->right = this->stdremove(current->right, temp->data); 
+    }
+ }
+ return current; 
+}
+void tree::remove(node* &current, int n){
+  stdremove(current, n); 
+  node* sibling = new node(); 
+  while(current != root && !current->isred){
+    if(current == current->parent->left){
+      sibling = current->parent->right;
+      if(sibling->isred){
+	sibling->isred = false;
+	current->parent->isred = true;
+	leftrotate(current->parent);
+	sibling = current->parent->right;
       }
-      else{
-	while(min->left != NULL){
-	  //loop until we get to the bottom
-	  parent = min;
-	  min = min->left;
-	}
-	//replace the node to delete
-	no->data = min->data;
-	//right subtree link to parent's left
-	parent->left = min->right;
+      if(!sibling->left->isred && !sibling->right->isred){
+	sibling->isred = true;
+	current = current->parent; 
+      }
+      else if(!sibling->right->isred){
+	sibling->left->isred = false;
+	sibling->isred = true;
+	rightrotate(sibling);
+	sibling = current->parent->right;
+	sibling->isred = current->parent->isred;
+	current->parent->isred = false;
+	sibling->right->isred = false;
+	leftrotate(current->parent);
+	current = root; 
+      }
+    }
+    else{
+      sibling = current->parent->left;
+      if(sibling->isred){
+	sibling->isred = false;
+	current->parent->isred = true;
+	rightrotate(current->parent); //could change to right rotate, rotation kept same
+	sibling = current->parent->left;
+      }
+      if(!sibling->right->isred && !sibling->left->isred){
+	sibling->isred = true;
+	current = current->parent;
+      }
+      else if(!sibling->left->isred){
+	sibling->right->isred = false;
+	sibling->isred = true;
+	leftrotate(sibling);
+	sibling = current->parent->left;
+	sibling->isred = current->parent->isred;
+	current->parent->isred = false;
+	sibling->left->isred = false;
+	rightrotate(current->parent);
+	current = root;
       }
     }
   }
-  return current; //for recursion
+  current->isred = false;
 }
-void tree::fixRemove(node* n){
-
+bool tree::search(node* current, int n){
+  if(current == NULL){
+    return false; 
+  }
+  else if(current->data > n){
+    return search(current->left, n); 
+  }
+  else if(current->data < n){
+    return search(current->right, n);
+  }
+  else{
+    return true; 
+  }
 }
 node*& tree::getRoot(){
   return root; 
