@@ -1,3 +1,4 @@
+
 #ifndef TREE_H
 #define TREE_H
 
@@ -22,8 +23,9 @@ class tree{
   void leftrotate(node*);
   void rightrotate(node*);
   void build(node*); //fix insert
-  node* stdremove(node* &, int);
+  void stdremove(node* &, int);
   void remove(node* &, int);
+  void swap(node*, node*);
   bool search(node*, int);
   node*& getRoot();
 private:

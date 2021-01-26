@@ -21,8 +21,6 @@ int main(){
       cout << "value to input: " << endl;
       cin >> intin; 
       t->insert(intin); 
-      //t->display(t->getRoot());
-      //cout << endl;
     }
     else if(strcmp(in, "read")==0){
       //get the file abd parse the content of the file
@@ -41,7 +39,7 @@ int main(){
     else if(strcmp(in, "delete")==0){
       cout << "value to delete: " << endl;
       cin >> intin;
-      t->remove(t->getRoot(), intin);
+      t->stdremove(t->getRoot(), intin);
     }
     else if(strcmp(in, "search")==0){
       cout << "number to search: " << endl;
