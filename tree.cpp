@@ -214,15 +214,113 @@ void tree::remove(node* &current, int num){
     if(current->left == NULL && current->right == NULL){
       current = NULL;
     }
-    else if(current->left == NULL){
-      node* temp = current->parent; 
-      current = current->right;
-      current->parent = temp; 
+    else if((current->left == NULL && current->right != NULL) || (current->right == NULL && current->left != NULL)){
+      node* temp = new node();
+      if(current->right == NULL){
+	temp = n->left;
+      }
+      else{
+	temp = n->right;
+      }
+      if(temp == NULL){
+	return;
+      }
+      temp->parent = current->parent; 
+      if(current == current->parent->left){
+	current->parent->left = child; 
+      }
+      else{
+	current->parent->right = child; 
+      }
+      if(!current->isred){
+	if(child->isred){
+	  child->isred = false;
+	}
+	else{
+	  this->fixremove(child);
+	}
+      }
     }
-    else if(current->right == NULL){
-      node* temp = current->parent; 
-      current = current->left;
-      current->parent = temp;
+  }
+}
+void fixremove(node* current){
+  //case 1
+  if(current == root){
+    return;
+  }
+  node* sibling = new node();
+  if(current->parent->right == current){
+    sibling = current->parent->left;
+  }
+  else{
+    sibling = current->parent->right; 
+  }
+  if(sibling == NULL){
+    return;
+  }
+  //case 2
+  if(sibling->isred){
+    current->parent->isred = true; 
+    sibling->isred = false;
+    if(current == current->parent->left){
+      leftrotate(current->parent);  
+    }
+    else{
+      rightrotate(current->parent);
+    }
+  }
+  if((!current->parent->isred) && (!sibling->isred) && (!sibling->left->isred) && (!sibling->right->isred)){
+     //case 3
+    sibling->isred = true;
+    fixremove(current->parent);
+  }
+  //case 4
+  if(current->parent->color && !sibling->isred && !sibling->left->isred && !sibling->right->isred){
+    current->parent->isred = false;
+    sibling->isred = true;
+    return;
+  }
+  //case 5
+  if(!sibling->isred){
+    if((current == current->parent->left)&&(sibling->right->isred) && (sibling-left->isred)){
+      sibling->isred = true;
+      sibling->left->isred = false;
+      rightrotate(sibling); 
+    }
+    else if((current == current->parent->right) && (!sibling->left->isred) && (sibling->right->isred)){
+      sibling->isred = true;
+      sibling->right->isred = false;
+      leftrotate(sibling);
+    }
+    if(!sibling->left->isred && sibling->right->isred && (current->parent->right == current)){
+		leftrotate(sibling);
+		sibling->isred = true;
+		sibling->left->isred = false; 
+	      }
+	      else if(!sibling->right->isred && sibling->left->isred && (current->parent->left == current)){
+		rightrotate(sibling);
+		sibling->isred = true;
+		sibling->right->isred = false;
+	      }
+	      else if(sibling->left->isred && current->parent->right == current){
+		//case 6
+		rightrotate(current->parent);
+		bool parentwasred = current->parent->isred;
+		current->parent->isred = sibling->isred;
+		sibling->isred = parentwasred;
+		sibling->left->isred = false; 
+	      }
+	      else if(sibling->right->isred && current->parent->left == current){
+		rightrotate(current->parent);
+		bool parentwasred = current->parent->isred;
+		current->parent->isred = sibling->isred;
+		sibling->isred = parentwasred;
+		sibling->right->isred = false; 
+	      }
+	    }
+	  }
+	}
+      }
     }
   }
 }
