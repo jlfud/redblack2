@@ -39,7 +39,7 @@ int main(){
     else if(strcmp(in, "delete")==0){
       cout << "value to delete: " << endl;
       cin >> intin;
-      t->stdremove(t->getRoot(), intin);
+      t->remove(t->getRoot(), intin);
     }
     else if(strcmp(in, "search")==0){
       cout << "number to search: " << endl;

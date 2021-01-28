@@ -192,132 +192,39 @@ void tree::build(node* n){
     g->isred = true;
   }
 }
-void tree::stdremove(node* &current, int n){
-  node* temp = current;
-  while(true){
-    if(temp == NULL){
-      cout << "no node found" << endl;
-      return; 
-    }
-    else if(n > temp->data){
-      temp = temp->right; 
-    }
-    else if(n < temp->data){
+void tree::remove(node* &current, int num){
+  if(current == NULL){
+    return;
+  }
+  else if(num < current->data){
+    remove(current->left, num); 
+  }
+  else if(num > current->data){
+    remove(current->right, num);
+  }
+  else if(current->left != NULL && current->right != NULL){
+    node* temp = current->right;
+    while(temp->left != NULL){
       temp = temp->left; 
     }
-    else{
-      break; 
-    }
-  }
-  node* x;
-  node* y = temp;
-  bool original_isred = y->isred; 
-  if(temp->left == NULL && temp->right != NULL){ 
-    x = temp->right; 
-    this->swap(temp, temp->right);
-  }
-  else if(temp->right == NULL && temp->left != NULL){
-    x = temp->left;
-    this->swap(temp, temp->left); 
+    current->data = temp->data;
+    remove(current->right, temp->data);
   }
   else{
-    cout << temp->data << endl; 
-    node* placeholder = temp->right;
-    while(placeholder->left != NULL){
-      placeholder = placeholder->left; 
+    if(current->left == NULL && current->right == NULL){
+      current = NULL;
     }
-    cout << "1" << endl; 
-    y = placeholder; 
-    original_isred = y->isred;
-    x = y->right;
-    cout << "@" << endl;
-    if(y->parent == temp){
-      x->parent = y;
+    else if(current->left == NULL){
+      node* temp = current->parent; 
+      current = current->right;
+      current->parent = temp; 
     }
-    else{ 
-      this->swap(y, y->right);
-      y->right = temp->right;
-      y->right->parent = y; 
-    } 
-    this->swap(temp, y);
-    y->left = temp->left;
-    y->left->parent = y;
-    y->isred = temp->isred; 
-  }
-  delete temp;
-  if(!original_isred){
-    remove(x, n);
-  }
-}
-void tree::swap(node* x, node* y){
-  if(x->parent == NULL){
-    root = y;
-  }
-  else if(x == x->parent->left){
-    x->parent->left = y; 
-  }
-  else{
-    x->parent->right = y;
-  }
-  y->parent = x->parent;
-}
-void tree::remove(node* &current, int num){
-  node* sibling = new node();
-  while(current != root && !current->isred){
-    if(current == current->parent->left){
-      sibling = current->parent->right;
-      if(sibling->isred){
-	sibling->isred = false;
-	current->parent->isred = true;
-	leftrotate(current->parent);
-	sibling = current->parent->right;
-      }
-      if(!sibling->left->isred && !sibling->right->isred){
-	sibling->isred = true;
-	current = current->parent; 
-      }
-      else{
-	if(!sibling->right->isred){
-	  sibling->left->isred = false;
-	  sibling->isred = true;
-	  rightrotate(sibling);
-	  sibling = current->parent->right;
-	}
-	sibling->isred = current->parent->isred;
-	current->parent->isred = false;
-	sibling->right->isred = false;
-	leftrotate(current->parent);
-	current = root;
-      }
-    }
-    else{
-      sibling = current->parent->left;
-      if(sibling->isred){
-	sibling->isred = false;
-	current->parent->isred = true;
-	rightrotate(current->parent); //could change to right rotate, rotation kept same
-	sibling = current->parent->left;
-      }
-      if(!sibling->right->isred && !sibling->left->isred){ //might be without left check?
-	sibling->isred = true;
-	current = current->parent;
-      }
-      else{
-	if(!sibling->left->isred){
-	  sibling->right->isred = false;
-	  sibling->isred = true;
-	  leftrotate(sibling);
-	  sibling = current->parent->left;
-	}
-	sibling->isred = current->parent->isred;
-	current->parent->isred = false;
-	sibling->left->isred = false;
-	rightrotate(current->parent);
-	current = root;
-      }
+    else if(current->right == NULL){
+      node* temp = current->parent; 
+      current = current->left;
+      current->parent = temp;
     }
   }
-  current->isred = false;
 }
 bool tree::search(node* current, int n){
   if(current == NULL){

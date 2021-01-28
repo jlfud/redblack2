@@ -23,9 +23,7 @@ class tree{
   void leftrotate(node*);
   void rightrotate(node*);
   void build(node*); //fix insert
-  void stdremove(node* &, int);
   void remove(node* &, int);
-  void swap(node*, node*);
   bool search(node*, int);
   node*& getRoot();
 private:
