@@ -11,7 +11,7 @@ int main(){
   char in[80]; //user input
   int intin; //integer input
   tree* t = new tree(); //red black tree
-  cout << "red black tree part 1: add, read, print, quit" << endl;
+  cout << "red black tree part 1: add, read, print, search, delete, quit" << endl;
   //program loop
   while(true){
     cout << "command: " << endl;

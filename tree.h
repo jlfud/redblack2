@@ -10,8 +10,8 @@ using namespace std;
 struct node{
   bool isred = true;
   int data;
-  node* left = NULL;
-  node* right = NULL;
+  node* left;
+  node* right;
   node* parent = NULL;
 };
 class tree{
@@ -23,7 +23,8 @@ class tree{
   void leftrotate(node*);
   void rightrotate(node*);
   void build(node*); //fix insert
-  void remove(node* &, int);
+  void remove(node* , int);
+  void fixremove(node*);
   bool search(node*, int);
   node*& getRoot();
 private:

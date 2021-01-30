@@ -5,7 +5,7 @@
 using namespace std; 
 
 tree::tree(){
-
+  
 }
 tree::~tree(){
 
@@ -192,7 +192,8 @@ void tree::build(node* n){
     g->isred = true;
   }
 }
-void tree::remove(node* &current, int num){
+void tree::remove(node* current, int num){
+  //mostly standard bst deletion
   if(current == NULL){
     return;
   }
@@ -208,42 +209,52 @@ void tree::remove(node* &current, int num){
       temp = temp->left; 
     }
     current->data = temp->data;
-    remove(current->right, temp->data);
+    this->remove(current->right, temp->data);
+  }
+  else if(current->right == NULL && current->right == NULL){
+    if(current == root){
+      root = NULL;
+      return;
+    }
+    else if(current->parent->right == current){
+      node* parent = current->parent;
+      this->fixremove(current);
+      parent->right = NULL; 
+    }
+    else{
+      node* parent = current->parent;
+      this->fixremove(current);
+      parent->left = NULL;
+    }
   }
   else{
-    if(current->left == NULL && current->right == NULL){
-      current = NULL;
-    }
-    else if((current->left == NULL && current->right != NULL) || (current->right == NULL && current->left != NULL)){
-      node* temp = new node();
-      if(current->right == NULL){
-	temp = n->left;
-      }
-      else{
-	temp = n->right;
-      }
-      if(temp == NULL){
-	return;
-      }
-      temp->parent = current->parent; 
-      if(current == current->parent->left){
-	current->parent->left = child; 
-      }
-      else{
-	current->parent->right = child; 
-      }
+    node* temp = (current->right) ? current->left : current->right;
+    if(temp == NULL){
       if(!current->isred){
-	if(child->isred){
-	  child->isred = false;
-	}
-	else{
-	  this->fixremove(child);
-	}
+	this->fixremove(current);
+	delete current;
+        return;
       }
     }
+    temp->parent = current->parent; 
+    if(current == current->parent->left){
+      current->parent->left = temp; 
+    }
+    else{
+      current->parent->right = temp; 
+    }
+    if(!current->isred){
+      if(temp->isred){
+        temp->isred = false;
+      }
+      else{
+	this->fixremove(temp);
+      }
+    }
+    delete current;
   }
 }
-void fixremove(node* current){
+void tree::fixremove(node* current){
   //case 1
   if(current == root){
     return;
@@ -273,55 +284,40 @@ void fixremove(node* current){
      //case 3
     sibling->isred = true;
     fixremove(current->parent);
+    return;
   }
   //case 4
-  if(current->parent->color && !sibling->isred && !sibling->left->isred && !sibling->right->isred){
+  if(sibling->left == NULL || sibling->right == NULL){
+    return;
+  }
+  if(current->parent->isred && !sibling->isred && !sibling->left->isred && !sibling->right->isred){
     current->parent->isred = false;
     sibling->isred = true;
     return;
   }
   //case 5
   if(!sibling->isred){
-    if((current == current->parent->left)&&(sibling->right->isred) && (sibling-left->isred)){
+    if((current == current->parent->left)&&(sibling->right->isred) && (sibling->left->isred)){
       sibling->isred = true;
       sibling->left->isred = false;
-      rightrotate(sibling); 
+      this->rightrotate(sibling); 
     }
     else if((current == current->parent->right) && (!sibling->left->isred) && (sibling->right->isred)){
       sibling->isred = true;
       sibling->right->isred = false;
-      leftrotate(sibling);
+      this->leftrotate(sibling);
     }
-    if(!sibling->left->isred && sibling->right->isred && (current->parent->right == current)){
-		leftrotate(sibling);
-		sibling->isred = true;
-		sibling->left->isred = false; 
-	      }
-	      else if(!sibling->right->isred && sibling->left->isred && (current->parent->left == current)){
-		rightrotate(sibling);
-		sibling->isred = true;
-		sibling->right->isred = false;
-	      }
-	      else if(sibling->left->isred && current->parent->right == current){
-		//case 6
-		rightrotate(current->parent);
-		bool parentwasred = current->parent->isred;
-		current->parent->isred = sibling->isred;
-		sibling->isred = parentwasred;
-		sibling->left->isred = false; 
-	      }
-	      else if(sibling->right->isred && current->parent->left == current){
-		rightrotate(current->parent);
-		bool parentwasred = current->parent->isred;
-		current->parent->isred = sibling->isred;
-		sibling->isred = parentwasred;
-		sibling->right->isred = false; 
-	      }
-	    }
-	  }
-	}
-      }
-    }
+  }
+    //case 6
+  sibling->isred = current->parent->isred;
+  current->parent->isred = false;
+  if(current == current->parent->left){
+    current->right->isred = false;
+    this->leftrotate(current->parent);
+  }
+  else{
+    current->left->isred = false;
+    this->rightrotate(current->parent);
   }
 }
 bool tree::search(node* current, int n){
