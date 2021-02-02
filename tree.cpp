@@ -312,11 +312,11 @@ void tree::fixremove(node* current){
   sibling->isred = current->parent->isred;
   current->parent->isred = false;
   if(current == current->parent->left){
-    current->right->isred = false;
+    sibling->right->isred = false;
     this->leftrotate(current->parent);
   }
   else{
-    current->left->isred = false;
+    sibling->left->isred = false;
     this->rightrotate(current->parent);
   }
 }
